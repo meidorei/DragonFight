@@ -1,0 +1,16 @@
+{
+  "name": "dragonfight",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "dev": "node tools/server.mjs",
+    "lan": "node tools/server.mjs --lan",
+    "check": "node tools/check.mjs",
+    "test": "node --test",
+    "build": "node tools/build.mjs",
+    "preview": "node tools/server.mjs --dist",
+    "placeholders": "node tools/placeholders.mjs"
+  }
+}

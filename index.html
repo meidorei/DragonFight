@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+ <meta name="theme-color" content="#161c2b"><meta name="description" content="DragonFight：本地网页格斗与可扩展角色实验室。">
+ <title>DragonFight · 龙斗</title><link rel="icon" href="./favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="./src/style.css">
+</head>
+<body>
+ <header class="topbar"><button class="wordmark" id="brand" aria-label="返回主菜单"><span class="brand-seal">龍</span> DRAGONFIGHT<span class="brand-cn">龙斗</span></button><nav aria-label="主导航"><button id="nav-lab">角色实验室</button><button id="nav-settings">设置</button><span class="local-status"><i></i> 本地街机</span></nav></header>
+ <main id="app"><div class="loading"><span class="brand-seal">龍</span><p>正在准备擂台与角色…</p></div></main>
+ <div id="toast" role="status" aria-live="polite" hidden></div>
+ <dialog id="dialog"><div id="dialog-content"></div></dialog>
+ <div id="rotate-tip"><span>↻</span><strong>横过手机，进入擂台</strong><p>横屏可同时操作摇杆与技能。</p><button id="rotate-back">返回菜单</button></div>
+ <script type="module" src="./src/app.js"></script>
+</body></html>

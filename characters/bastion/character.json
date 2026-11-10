@@ -1,0 +1,469 @@
+{
+  "version": 1,
+  "id": "bastion",
+  "name": "岩卫",
+  "role": "重装",
+  "description": "重装防护，蓄势反击。",
+  "color": "#e6bd70",
+  "portrait": "portrait.png",
+  "placeholder": true,
+  "stats": {
+    "health": 1250,
+    "speed": 210,
+    "jump": 580
+  },
+  "hurtbox": {
+    "width": 54,
+    "height": 122
+  },
+  "animations": {
+    "idle": {
+      "src": "idle.png",
+      "frameWidth": 256,
+      "frameHeight": 256,
+      "frames": 4,
+      "fps": 6,
+      "loop": true,
+      "anchor": [
+        128,
+        232
+      ]
+    },
+    "walk": {
+      "src": "walk.png",
+      "frameWidth": 256,
+      "frameHeight": 256,
+      "frames": 6,
+      "fps": 12,
+      "loop": true,
+      "anchor": [
+        128,
+        232
+      ]
+    },
+    "jump": {
+      "src": "jump.png",
+      "frameWidth": 256,
+      "frameHeight": 256,
+      "frames": 3,
+      "fps": 12,
+      "loop": false,
+      "anchor": [
+        128,
+        232
+      ]
+    },
+    "guard": {
+      "src": "guard.png",
+      "frameWidth": 256,
+      "frameHeight": 256,
+      "frames": 2,
+      "fps": 6,
+      "loop": true,
+      "anchor": [
+        128,
+        232
+      ]
+    },
+    "dodge": {
+      "src": "dodge.png",
+      "frameWidth": 256,
+      "frameHeight": 256,
+      "frames": 3,
+      "fps": 12,
+      "loop": false,
+      "anchor": [
+        128,
+        232
+      ]
+    },
+    "hurt": {
+      "src": "hurt.png",
+      "frameWidth": 256,
+      "frameHeight": 256,
+      "frames": 2,
+      "fps": 12,
+      "loop": false,
+      "anchor": [
+        128,
+        232
+      ]
+    },
+    "knockdown": {
+      "src": "knockdown.png",
+      "frameWidth": 256,
+      "frameHeight": 256,
+      "frames": 3,
+      "fps": 12,
+      "loop": false,
+      "anchor": [
+        128,
+        232
+      ]
+    },
+    "getup": {
+      "src": "getup.png",
+      "frameWidth": 256,
+      "frameHeight": 256,
+      "frames": 3,
+      "fps": 12,
+      "loop": false,
+      "anchor": [
+        128,
+        232
+      ]
+    },
+    "ko": {
+      "src": "ko.png",
+      "frameWidth": 256,
+      "frameHeight": 256,
+      "frames": 3,
+      "fps": 12,
+      "loop": false,
+      "anchor": [
+        128,
+        232
+      ]
+    },
+    "victory": {
+      "src": "victory.png",
+      "frameWidth": 256,
+      "frameHeight": 256,
+      "frames": 4,
+      "fps": 12,
+      "loop": false,
+      "anchor": [
+        128,
+        232
+      ]
+    },
+    "light": {
+      "src": "light.png",
+      "frameWidth": 256,
+      "frameHeight": 256,
+      "frames": 4,
+      "fps": 12,
+      "loop": false,
+      "anchor": [
+        128,
+        232
+      ]
+    },
+    "heavy": {
+      "src": "heavy.png",
+      "frameWidth": 256,
+      "frameHeight": 256,
+      "frames": 5,
+      "fps": 12,
+      "loop": false,
+      "anchor": [
+        128,
+        232
+      ]
+    },
+    "air": {
+      "src": "air.png",
+      "frameWidth": 256,
+      "frameHeight": 256,
+      "frames": 4,
+      "fps": 12,
+      "loop": false,
+      "anchor": [
+        128,
+        232
+      ]
+    },
+    "skill1": {
+      "src": "skill1.png",
+      "frameWidth": 256,
+      "frameHeight": 256,
+      "frames": 6,
+      "fps": 12,
+      "loop": false,
+      "anchor": [
+        128,
+        232
+      ]
+    },
+    "skill2": {
+      "src": "skill2.png",
+      "frameWidth": 256,
+      "frameHeight": 256,
+      "frames": 6,
+      "fps": 12,
+      "loop": false,
+      "anchor": [
+        128,
+        232
+      ]
+    },
+    "skill3": {
+      "src": "skill3.png",
+      "frameWidth": 256,
+      "frameHeight": 256,
+      "frames": 6,
+      "fps": 12,
+      "loop": false,
+      "anchor": [
+        128,
+        232
+      ]
+    },
+    "ultimate": {
+      "src": "ultimate.png",
+      "frameWidth": 256,
+      "frameHeight": 256,
+      "frames": 8,
+      "fps": 12,
+      "loop": false,
+      "anchor": [
+        128,
+        232
+      ]
+    }
+  },
+  "moves": {
+    "light": {
+      "name": "探锋",
+      "animation": "light",
+      "startup": 6,
+      "active": 4,
+      "recovery": 12,
+      "damage": 45,
+      "cost": 0,
+      "effects": [
+        {
+          "type": "melee",
+          "at": 0,
+          "range": 86,
+          "height": 125
+        }
+      ],
+      "knockback": 220,
+      "stun": 16,
+      "cooldown": 0,
+      "phases": {
+        "startup": [
+          0
+        ],
+        "active": [
+          1,
+          2
+        ],
+        "recovery": [
+          3
+        ]
+      }
+    },
+    "heavy": {
+      "name": "破阵",
+      "animation": "heavy",
+      "startup": 15,
+      "active": 6,
+      "recovery": 23,
+      "damage": 95,
+      "cost": 0,
+      "effects": [
+        {
+          "type": "melee",
+          "at": 0,
+          "range": 110,
+          "height": 125
+        }
+      ],
+      "knockback": 370,
+      "stun": 25,
+      "cooldown": 0,
+      "phases": {
+        "startup": [
+          0
+        ],
+        "active": [
+          1,
+          2,
+          3
+        ],
+        "recovery": [
+          4
+        ]
+      },
+      "knockdown": true
+    },
+    "air": {
+      "name": "掠空",
+      "animation": "air",
+      "startup": 7,
+      "active": 7,
+      "recovery": 14,
+      "damage": 60,
+      "cost": 0,
+      "effects": [
+        {
+          "type": "melee",
+          "at": 0,
+          "range": 98,
+          "height": 125
+        }
+      ],
+      "knockback": 220,
+      "stun": 16,
+      "cooldown": 0,
+      "phases": {
+        "startup": [
+          0
+        ],
+        "active": [
+          1,
+          2
+        ],
+        "recovery": [
+          3
+        ]
+      }
+    },
+    "skill1": {
+      "name": "踏风击",
+      "animation": "skill1",
+      "startup": 12,
+      "active": 7,
+      "recovery": 22,
+      "damage": 80,
+      "cost": 15,
+      "effects": [
+        {
+          "type": "dash",
+          "at": 0,
+          "speed": 650
+        },
+        {
+          "type": "melee",
+          "at": 0,
+          "range": 120,
+          "height": 125
+        }
+      ],
+      "knockback": 220,
+      "stun": 16,
+      "cooldown": 65,
+      "phases": {
+        "startup": [
+          0,
+          1
+        ],
+        "active": [
+          2,
+          3
+        ],
+        "recovery": [
+          4,
+          5
+        ]
+      }
+    },
+    "skill2": {
+      "name": "磐石壁",
+      "animation": "skill2",
+      "startup": 8,
+      "active": 4,
+      "recovery": 20,
+      "damage": 0,
+      "cost": 20,
+      "effects": [
+        {
+          "type": "shield",
+          "at": 0,
+          "amount": 190,
+          "duration": 240
+        }
+      ],
+      "knockback": 220,
+      "stun": 16,
+      "cooldown": 300,
+      "phases": {
+        "startup": [
+          0,
+          1
+        ],
+        "active": [
+          2,
+          3
+        ],
+        "recovery": [
+          4,
+          5
+        ]
+      }
+    },
+    "skill3": {
+      "name": "燃志",
+      "animation": "skill3",
+      "startup": 12,
+      "active": 4,
+      "recovery": 24,
+      "damage": 0,
+      "cost": 25,
+      "effects": [
+        {
+          "type": "buff",
+          "at": 0,
+          "multiplier": 1.4,
+          "duration": 300
+        }
+      ],
+      "knockback": 220,
+      "stun": 16,
+      "cooldown": 360,
+      "phases": {
+        "startup": [
+          0,
+          1
+        ],
+        "active": [
+          2,
+          3
+        ],
+        "recovery": [
+          4,
+          5
+        ]
+      }
+    },
+    "ultimate": {
+      "name": "山岳震",
+      "animation": "ultimate",
+      "startup": 28,
+      "active": 12,
+      "recovery": 34,
+      "damage": 260,
+      "cost": 100,
+      "effects": [
+        {
+          "type": "area",
+          "at": 0,
+          "range": 260,
+          "height": 240
+        }
+      ],
+      "knockback": 600,
+      "stun": 40,
+      "cooldown": 120,
+      "phases": {
+        "startup": [
+          0,
+          1
+        ],
+        "active": [
+          2,
+          3,
+          4,
+          5
+        ],
+        "recovery": [
+          6,
+          7
+        ]
+      },
+      "knockdown": true
+    }
+  }
+}

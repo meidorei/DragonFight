@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "characters": [
+    "ember/character.json",
+    "nova/character.json",
+    "bastion/character.json"
+  ]
+}
