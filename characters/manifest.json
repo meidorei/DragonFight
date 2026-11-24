@@ -3,6 +3,7 @@
   "characters": [
     "ember/character.json",
     "nova/character.json",
-    "bastion/character.json"
+    "bastion/character.json",
+    "nailong/character.json"
   ]
 }

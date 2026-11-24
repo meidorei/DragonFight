@@ -21,7 +21,12 @@ export function mountLab(root,roster,toast,onBack){
  const cfg=()=>({frameWidth:Number($('lab-width').value),frameHeight:Number($('lab-height').value),anchor:[Number($('lab-x').value),Number($('lab-y').value)],fps:Number($('lab-fps').value),loop:$('lab-loop').checked});
  function count(){return imported?.frames??def.animations[action].frames;}
  function configure(){const a=def.animations[action];for(const [id,v]of [['width',a.frameWidth],['height',a.frameHeight],['x',a.anchor[0]],['y',a.anchor[1]],['fps',a.fps]])$('lab-'+id).value=v;$('lab-loop').checked=a.loop;frame=0;elapsed=0;updateInfo();}
- function updateInfo(){const a=cfg();$('lab-scrub').max=count()-1;$('lab-info').textContent=`${imported?'本地素材':'样板：'+def.name+'（占位素材）'}\n${a.frameWidth} × ${a.frameHeight} px / 帧 · ${count()} 帧 · ${a.fps} fps\n锚点 (${a.anchor.join(', ')}) · ${imported?.alpha??'样板为透明 PNG'}\n${imported?'尺寸与帧数量检查通过。请检查轮廓、脚线和连续动作。':'选择自己的 PNG 后可导出素材与配置。'}`;}
+ function updateInfo(){
+  const a=cfg();
+  const characterLabel=def.placeholder?'样板：'+def.name+'（占位素材）':'角色：'+def.name;
+  $('lab-scrub').max=count()-1;
+  $('lab-info').textContent=`${imported?'本地素材':characterLabel}\n${a.frameWidth} × ${a.frameHeight} px / 帧 · ${count()} 帧 · ${a.fps} fps\n锚点 (${a.anchor.join(', ')}) · ${imported?.alpha??'透明 PNG'}\n${imported?'尺寸与帧数量检查通过。请检查轮廓、脚线和连续动作。':'选择自己的 PNG 后可导出素材与配置。'}`;
+ }
  function clearImported(){if(imported)for(const im of imported.images)im.close?.();imported=null;$('lab-files').value='';}
  $('lab-character').onchange=()=>{clearImported();def=roster[Number($('lab-character').value)];configure();};
  $('lab-action').onchange=()=>{clearImported();action=$('lab-action').value;configure();};
