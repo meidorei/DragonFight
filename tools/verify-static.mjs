@@ -3,6 +3,7 @@ import {readFile} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import assert from 'node:assert/strict';
+import {spriteAnimationEntries} from '../src/schema.js';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const port=process.env.VERIFY_PORT||'4198';
 const child=spawn(process.execPath,['tools/server.mjs','--dist'],{cwd:root,env:{...process.env,PORT:port},windowsHide:true,stdio:['ignore','pipe','pipe']});
@@ -14,7 +15,7 @@ try{
  const app=await get('src/app.js');assert(app.headers.get('content-type').includes('javascript'));
  await get('src/style.css');await get('favicon.svg');await get('docs/'+encodeURIComponent('角色制作规范.md'));
  const manifest=await (await get('characters/manifest.json')).json();
- for(const p of manifest.characters){const c=await (await get('characters/'+p)).json(),dir='characters/'+p.slice(0,p.lastIndexOf('/')+1);await get(dir+c.portrait);for(const a of Object.values(c.animations))for(const f of a.files||[a.src])await get(dir+f);}
+ for(const p of manifest.characters){const c=await (await get('characters/'+p)).json(),dir='characters/'+p.slice(0,p.lastIndexOf('/')+1);await get(dir+c.portrait);for(const [,a] of spriteAnimationEntries(c))for(const f of a.files||[a.src])await get(dir+f);}
  assert.equal((await fetch(base+'not-found.png')).status,404);
  assert.equal((await fetch(base+'.git/config')).status,403);
  assert.equal((await fetch(base+'tools/server.mjs')).status,403);

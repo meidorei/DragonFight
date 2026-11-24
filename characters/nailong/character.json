@@ -3,7 +3,7 @@
   "id": "nailong",
   "name": "奶龙",
   "role": "近战",
-  "description": "用肚皮冲撞拉近距离，靠护盾和泡泡弹攻守转换。",
+  "description": "爱凑热闹的泡泡拳手。用头槌贴身，撑起圆肚护盾，再吐出泡泡牵制。",
   "color": "#f5ba3e",
   "portrait": "portrait.png",
   "stats": {
@@ -321,7 +321,7 @@
       }
     },
     "skill1": {
-      "name": "肚皮冲撞",
+      "name": "头槌冲撞",
       "animation": "skill1",
       "startup": 11,
       "active": 8,
@@ -357,7 +357,26 @@
           4,
           5
         ]
-      }
+      },
+      "vfx": [
+        {
+          "at": 0,
+          "src": "vfx/headbutt-surge.png",
+          "frameWidth": 128,
+          "frameHeight": 128,
+          "frames": 5,
+          "fps": 22,
+          "anchor": [
+            54,
+            58
+          ],
+          "offset": [
+            46,
+            108
+          ],
+          "size": 106
+        }
+      ]
     },
     "skill2": {
       "name": "圆肚护盾",
@@ -391,7 +410,26 @@
           4,
           5
         ]
-      }
+      },
+      "vfx": [
+        {
+          "at": 0,
+          "src": "vfx/buoyant-shield.png",
+          "frameWidth": 128,
+          "frameHeight": 192,
+          "frames": 6,
+          "fps": 24,
+          "anchor": [
+            64,
+            96
+          ],
+          "offset": [
+            0,
+            68
+          ],
+          "size": 178
+        }
+      ]
     },
     "skill3": {
       "name": "泡泡弹",
@@ -427,7 +465,26 @@
           4,
           5
         ]
-      }
+      },
+      "vfx": [
+        {
+          "at": 0,
+          "src": "vfx/bubble-release.png",
+          "frameWidth": 128,
+          "frameHeight": 128,
+          "frames": 5,
+          "fps": 24,
+          "anchor": [
+            50,
+            64
+          ],
+          "offset": [
+            46,
+            115
+          ],
+          "size": 88
+        }
+      ]
     },
     "ultimate": {
       "name": "奶龙震地",
@@ -442,7 +499,8 @@
           "type": "area",
           "at": 0,
           "range": 250,
-          "height": 180
+          "height": 180,
+          "visual": "ground-impact"
         }
       ],
       "knockback": 600,
@@ -451,10 +509,10 @@
       "phases": {
         "startup": [
           0,
-          1
+          1,
+          2
         ],
         "active": [
-          2,
           3,
           4,
           5
@@ -464,7 +522,26 @@
           7
         ]
       },
-      "knockdown": true
+      "knockdown": true,
+      "vfx": [
+        {
+          "at": 0,
+          "src": "vfx/ground-splash.png",
+          "frameWidth": 512,
+          "frameHeight": 128,
+          "frames": 8,
+          "fps": 20,
+          "anchor": [
+            256,
+            104
+          ],
+          "offset": [
+            0,
+            0
+          ],
+          "size": 124
+        }
+      ]
     }
   }
 }

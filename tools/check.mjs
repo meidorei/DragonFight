@@ -2,7 +2,7 @@ import {readFile,readdir,stat} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {spawnSync} from 'node:child_process';
-import {validateCharacter,safePath} from '../src/schema.js';
+import {validateCharacter,safePath,spriteAnimationEntries} from '../src/schema.js';
 import {skillPlugins} from '../src/plugins/registry.js';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 export async function checkCharacter(file){
@@ -14,7 +14,9 @@ export async function checkCharacter(file){
   try{const b=await readFile(path.join(directory,src));if(b.length<33||b.subarray(0,8).toString('hex')!=='89504e470d0a1a0a')throw new Error('不是有效 PNG');const w=b.readUInt32BE(16),h=b.readUInt32BE(20);if(width&&(w!==width||h!==height))throw new Error(`尺寸 ${w}×${h}，应为 ${width}×${height}`);if(![4,6].includes(b[25]))errors.push(`${file}: ${src} 必须提供带 alpha 通道的 PNG（RGBA / 灰度 alpha）`);}catch(e){errors.push(`${file}: ${src} ${e.message}`);}
  }
  await png(c.portrait);
- for(const [name,a]of Object.entries(c.animations)){if(a.files)for(const src of a.files)await png(src,a.frameWidth,a.frameHeight);else await png(a.src,a.frameWidth*a.frames,a.frameHeight);}
+ for(const [,a] of spriteAnimationEntries(c)){
+  for(const src of a.files||[a.src])await png(src,a.frameWidth*(a.files?1:a.frames),a.frameHeight);
+ }
  for(const [name,m]of Object.entries(c.moves))for(const [i,e]of m.effects.entries())if(e.type==='plugin'&&!skillPlugins[e.plugin])errors.push(`${file}: moves.${name}.effects[${i}].plugin 未注册 ${e.plugin}`);
  return errors;
 }

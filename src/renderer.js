@@ -1,9 +1,12 @@
 import {images} from './assets.js';
-import {WIDTH,FLOOR,attackStage,attackFrame} from './engine.js';
+import {FLOOR,attackFrame} from './engine.js';
 export function drawSprite(ctx,def,action,age,x,y,{size=192,flip=1,frame=null,alpha=1}={}){
  const a=def.animations[action]||def.animations.idle;
+ drawAnimation(ctx,def.base,a,age,x,y,{size,flip,frame,alpha});
+}
+function drawAnimation(ctx,base,a,age,x,y,{size,flip=1,frame=null,alpha=1}){
  let index=frame??Math.floor(age*a.fps/60);index=a.loop?index%a.frames:Math.min(a.frames-1,index);
- const im=images.get(def.base+(a.files?a.files[index]:a.src));if(!im)return;
+ const im=images.get(base+(a.files?a.files[index]:a.src));if(!im)return;
  const scale=size/a.frameHeight;
  ctx.save();ctx.translate(x,y);ctx.scale(flip,1);ctx.globalAlpha=alpha;
  ctx.drawImage(im,a.files?0:index*a.frameWidth,0,a.frameWidth,a.frameHeight,-a.anchor[0]*scale,-a.anchor[1]*scale,a.frameWidth*scale,size);ctx.restore();
@@ -19,6 +22,46 @@ export function drawStage(c){
  c.fillStyle='#383640';c.fillRect(0,505,1200,170);c.fillStyle='#cfac8b';c.fillRect(0,505,1200,5);c.fillStyle='#1c2333';c.fillRect(0,510,1200,14);
  c.strokeStyle='#62535a';c.lineWidth=1;for(let x=-600;x<1800;x+=160){c.beginPath();c.moveTo(600+(x-600)*.6,524);c.lineTo(x,675);c.stroke();}for(const y of [552,602,670]){c.beginPath();c.moveTo(0,y);c.lineTo(1200,y);c.stroke();}
  c.save();c.globalAlpha=.06;c.font='bold 230px serif';c.textAlign='center';c.fillStyle='#f8dbb5';c.fillText('龍',600,420);c.restore();
+}
+function drawDebugHitboxes(c,w){
+  c.save();
+  c.lineWidth=2;
+  c.strokeStyle='#7cf4cc';
+  c.fillStyle='#7cf4cc24';
+  for(const f of w.fighters){
+    if(f.hp<=0)continue;
+    const {width,height}=f.def.hurtbox;
+    const x=f.x-width/2,y=FLOOR-f.y-height;
+    c.setLineDash(f.invincible>0?[6,4]:[]);
+    c.fillRect(x,y,width,height);
+    c.strokeRect(x,y,width,height);
+  }
+  c.setLineDash([]);
+  for(const box of w.debug.hitboxes){
+    const {x,y,width,height}=box;
+    const left=x-width/2,top=FLOOR-y-height/2;
+    const projectile=box.type==='projectile';
+    c.strokeStyle=projectile?'#ffd477':'#ff6176';
+    c.fillStyle=projectile?'#ffd47740':'#ff617650';
+    c.fillRect(left,top,width,height);
+    c.strokeRect(left,top,width,height);
+  }
+  c.restore();
+}
+function drawGroundImpact(c,v,reducedMotion){
+  const fade=v.life/25;
+  const radius=v.range*(reducedMotion ? .65 : 1-.8*fade);
+  const depth=Math.max(3,radius*.105);
+  c.globalAlpha=fade*(reducedMotion ? .52 : .95);
+  c.lineWidth=4;
+  c.beginPath();
+  c.ellipse(0,-3,radius,depth,0,0,Math.PI*2);
+  c.stroke();
+  c.globalAlpha*=.64;
+  c.lineWidth=2;
+  c.beginPath();
+  c.ellipse(0,-3,radius*.7,depth*.72,0,0,Math.PI*2);
+  c.stroke();
 }
 export class Renderer{
  constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.stage=document.createElement('canvas');this.stage.width=1200;this.stage.height=675;drawStage(this.stage.getContext('2d'));canvas.width=1200;canvas.height=675;}
@@ -36,13 +79,40 @@ export class Renderer{
    if(f.shield>0){c.strokeStyle='#9dddf0';c.lineWidth=3;c.globalAlpha=.6;c.beginPath();c.ellipse(f.x,FLOOR-f.y-68,55,78,0,0,7);c.stroke();c.globalAlpha=1;}
    c.fillStyle=f.team===0?'#ff8179':'#90c9ff';c.beginPath();c.moveTo(f.x,FLOOR-f.y-188);c.lineTo(f.x-6,FLOOR-f.y-198);c.lineTo(f.x+6,FLOOR-f.y-198);c.fill();
    c.font='bold 12px sans-serif';c.textAlign='center';c.fillText(f.control==='cpu'?'CPU':f.control.toUpperCase(),f.x,FLOOR-f.y-206);
-   if(w.training.hitboxes){
-    c.strokeStyle='#7cf4cc';c.lineWidth=2;c.strokeRect(f.x-f.def.hurtbox.width/2,FLOOR-f.y-f.def.hurtbox.height,f.def.hurtbox.width,f.def.hurtbox.height);
-    if(f.attack&&attackStage(f.attack)==='active')for(const e of f.attack.move.effects)if(e.type==='melee'||e.type==='area'){c.fillStyle='#ff617650';const width=e.type==='area'?e.range*2:e.range,x=e.type==='area'?f.x-e.range:f.facing===1?f.x:f.x-e.range;c.fillRect(x,FLOOR-f.y-65-e.height/2,width,e.height);}
-   }
   }
   for(const p of w.projectiles){c.fillStyle=p.owner.def.color;c.shadowColor=p.owner.def.color;c.shadowBlur=18;c.beginPath();c.ellipse(p.x,FLOOR-p.y,p.width/2,p.height/2,0,0,7);c.fill();c.shadowBlur=0;c.fillStyle='#fff4d7';c.beginPath();c.arc(p.x,FLOOR-p.y,6,0,7);c.fill();}
-  for(const v of w.visuals){c.save();c.translate(v.x,FLOOR-v.y);c.strokeStyle=v.color;c.lineWidth=3;c.globalAlpha=v.life/25;const r=(25-v.life)*2+8;if(v.kind==='hit'||v.kind==='spark'){for(let i=0;i<8;i++){const a=i*Math.PI/4;c.beginPath();c.moveTo(Math.cos(a)*r*.4,Math.sin(a)*r*.4);c.lineTo(Math.cos(a)*r,Math.sin(a)*r);c.stroke();}}else{c.beginPath();c.arc(0,0,r,0,7);c.stroke();}c.restore();}
+  for(const v of w.visuals){
+    if(v.kind==='attack-vfx'){
+      const {animation,base,duration,life,facing}=v;
+      drawAnimation(c,base,animation,duration-life,v.x,FLOOR-v.y,{size:animation.size??animation.frameHeight,flip:facing});
+      continue;
+    }
+    c.save();
+    c.translate(v.x,FLOOR-v.y);
+    c.strokeStyle=v.color;
+    if(v.kind==='ground-impact'){
+      drawGroundImpact(c,v,settings.reducedMotion);
+    }else{
+      c.lineWidth=3;
+      c.globalAlpha=v.life/25;
+      const r=(25-v.life)*2+8;
+      if(v.kind==='hit'||v.kind==='spark'){
+        for(let i=0;i<8;i++){
+          const a=i*Math.PI/4;
+          c.beginPath();
+          c.moveTo(Math.cos(a)*r*.4,Math.sin(a)*r*.4);
+          c.lineTo(Math.cos(a)*r,Math.sin(a)*r);
+          c.stroke();
+        }
+      }else{
+        c.beginPath();
+        c.arc(0,0,r,0,7);
+        c.stroke();
+      }
+    }
+    c.restore();
+  }
+  if(w.debug)drawDebugHitboxes(c,w);
   c.restore();
  }
 }

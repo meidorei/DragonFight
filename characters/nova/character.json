@@ -3,10 +3,9 @@
   "id": "nova",
   "name": "星遥",
   "role": "远程",
-  "description": "保持距离，用星屑牵制。",
-  "color": "#74baf5",
+  "description": "沉着的天文测绘师，用星盘推演对手的走位。星屑弹封住前路，轨道护罩争取重整的时间。",
+  "color": "#91c8f5",
   "portrait": "portrait.png",
-  "placeholder": true,
   "stats": {
     "health": 900,
     "speed": 260,
@@ -224,7 +223,7 @@
   },
   "moves": {
     "light": {
-      "name": "探锋",
+      "name": "星针点刺",
       "animation": "light",
       "startup": 6,
       "active": 4,
@@ -256,7 +255,7 @@
       }
     },
     "heavy": {
-      "name": "破阵",
+      "name": "回盘重击",
       "animation": "heavy",
       "startup": 15,
       "active": 6,
@@ -290,7 +289,7 @@
       "knockdown": true
     },
     "air": {
-      "name": "掠空",
+      "name": "掠星踢",
       "animation": "air",
       "startup": 7,
       "active": 7,
@@ -355,10 +354,29 @@
           4,
           5
         ]
-      }
+      },
+      "vfx": [
+        {
+          "at": 0,
+          "src": "vfx/starburst.png",
+          "frameWidth": 168,
+          "frameHeight": 128,
+          "frames": 6,
+          "fps": 24,
+          "anchor": [
+            45,
+            64
+          ],
+          "offset": [
+            45,
+            70
+          ],
+          "size": 128
+        }
+      ]
     },
     "skill2": {
-      "name": "守心",
+      "name": "轨道护罩",
       "animation": "skill2",
       "startup": 8,
       "active": 4,
@@ -389,10 +407,29 @@
           4,
           5
         ]
-      }
+      },
+      "vfx": [
+        {
+          "at": 0,
+          "src": "vfx/orbital-ward.png",
+          "frameWidth": 220,
+          "frameHeight": 196,
+          "frames": 6,
+          "fps": 20,
+          "anchor": [
+            110,
+            91
+          ],
+          "offset": [
+            0,
+            68
+          ],
+          "size": 176
+        }
+      ]
     },
     "skill3": {
-      "name": "燃志",
+      "name": "星盘校准",
       "animation": "skill3",
       "startup": 12,
       "active": 4,
@@ -423,7 +460,26 @@
           4,
           5
         ]
-      }
+      },
+      "vfx": [
+        {
+          "at": 0,
+          "src": "vfx/calibration.png",
+          "frameWidth": 220,
+          "frameHeight": 196,
+          "frames": 6,
+          "fps": 20,
+          "anchor": [
+            110,
+            91
+          ],
+          "offset": [
+            0,
+            61
+          ],
+          "size": 192
+        }
+      ]
     },
     "ultimate": {
       "name": "星河坠落",
@@ -460,7 +516,26 @@
           7
         ]
       },
-      "knockdown": true
+      "knockdown": true,
+      "vfx": [
+        {
+          "at": 0,
+          "src": "vfx/galaxyfall.png",
+          "frameWidth": 800,
+          "frameHeight": 240,
+          "frames": 9,
+          "fps": 18,
+          "anchor": [
+            400,
+            216
+          ],
+          "offset": [
+            0,
+            0
+          ],
+          "size": 240
+        }
+      ]
     }
   }
 }

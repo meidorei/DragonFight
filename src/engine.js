@@ -14,13 +14,16 @@ export function challengeModifiers(mode,level=1,bonuses={}){
 }
 export function createRound({mode='duel',slots,difficulty='normal',level=1,bonuses={},training={},seed=Date.now()}={}){
  const challenge=['challenge','onslaught'].includes(mode),mods=challengeModifiers(mode,level,bonuses);
- const w={mode,difficulty,level,frame:0,remaining:3600,status:'playing',winner:null,hitstop:0,shake:0,events:[],projectiles:[],visuals:[],errors:[],rng:random(seed),training:{dummy:'idle',autoHeal:true,infiniteEnergy:true,hitboxes:false,...training},fighters:[]};
+ const w={mode,difficulty,level,frame:0,remaining:3600,status:'playing',winner:null,hitstop:0,shake:0,events:[],projectiles:[],visuals:[],errors:[],rng:random(seed),training:{dummy:'idle',autoHeal:true,infiniteEnergy:true,...training},debug:null,fighters:[]};
  const counts=[slots.filter(s=>s.team===0).length,slots.filter(s=>s.team===1).length],seen=[0,0];
  w.fighters=slots.map((s,i)=>{
   const m=challenge?(s.team===0?mods.player:mods.enemy):{health:1,damage:1,speed:1,energy:0,shield:0};
   const at=seen[s.team]++;
   return {id:i,def:s.character,team:s.team,control:s.control,x:s.team===0?260-at*135:940+at*135,y:0,vx:0,vy:0,facing:s.team===0?1:-1,hp:s.character.stats.health*m.health,maxHp:s.character.stats.health*m.health,damage:m.damage,speed:s.character.stats.speed*m.speed,energy:m.energy,shield:m.shield,shieldTime:m.shield?999999:0,buff:1,buffTime:0,state:'idle',stateAge:0,stun:0,invincible:0,dodgeCooldown:0,attack:null,cooldowns:{},lastDamage:-999,aiIntent:{},nextThink:0,attackSerial:0};
  });return w;
+}
+export function setDebugHitboxes(w, enabled){
+  w.debug=enabled?(w.debug??{hitboxes:[]}):null;
 }
 export function setState(f,s){if(f.state!==s){f.state=s;f.stateAge=0;}}
 export function attackStage(a){return a.t<a.move.startup?'startup':a.t<a.move.startup+a.move.active?'active':'recovery';}
@@ -65,14 +68,26 @@ export function hit(w,source,target,move,token,hitSet,impactX=source.x){
 }
 function collision(f,x,y,width,height){return Math.abs(f.x-x)<(f.def.hurtbox.width+width)/2&&f.y<y+height/2&&f.y+f.def.hurtbox.height>y-height/2;}
 function effects(w,f,a){
- const m=a.move;
+ const m=a.move,t=a.t-m.startup;
+ for(const animation of m.vfx??[]){
+  if(t!==animation.at)continue;
+  const [forward,up]=animation.offset??[0,0];
+  const duration=Math.ceil(animation.frames*60/animation.fps);
+  w.visuals.push({kind:'attack-vfx',x:f.x+forward*a.facing,y:f.y+up,facing:a.facing,
+   base:f.def.base,animation,duration,life:duration+1}); // The spawning step also decrements life.
+ }
  for(let i=0;i<m.effects.length;i++){
-  const e=m.effects[i],t=a.t-m.startup;
+  const e=m.effects[i];
   if(t<e.at||t>=m.active)continue;
   const first=!a.fired.has(i);a.fired.add(i);
   if(e.type==='melee'||e.type==='area'){
    const x=e.type==='area'?f.x:f.x+a.facing*e.range/2,width=e.type==='area'?e.range*2:e.range;
-   for(const target of w.fighters)if(collision(target,x,f.y+65,width,e.height))hit(w,f,target,m,`${i}:${target.id}`,a.hits);
+   const y=f.y+65;
+   if(first&&e.type==='area'&&e.visual==='ground-impact'){
+    w.visuals.push({kind:'ground-impact',x,y:0,range:e.range,life:25,color:f.def.color});
+   }
+   if(w.debug)w.debug.hitboxes.push({type:e.type,x,y,width,height:e.height});
+   for(const target of w.fighters)if(collision(target,x,y,width,e.height))hit(w,f,target,m,`${i}:${target.id}`,a.hits);
   }else if(first){
    if(e.type==='projectile')w.projectiles.push({owner:f,x:f.x+a.facing*45,y:f.y+70,vx:a.facing*e.speed,life:e.duration,width:e.range,height:e.height,move:m,hits:new Set()});
    if(e.type==='shield'){f.shield+=e.amount;f.shieldTime=e.duration;}
@@ -137,6 +152,7 @@ export function step(w,inputs={}){
  if(w.status!=='playing')return;
  w.events=[];
  if(w.hitstop>0){w.hitstop--;return;}
+ if(w.debug)w.debug.hitboxes.length=0;
  w.frame++;w.shake*=.82;
  if(w.mode!=='training')w.remaining--;
  for(const f of w.fighters)updateFighter(w,f,f.control==='cpu'?aiInput(w,f):inputs[f.control]||{});
@@ -148,6 +164,7 @@ export function step(w,inputs={}){
  }
  for(const p of w.projectiles){
   p.x+=p.vx*STEP;p.life--;
+  if(w.debug)w.debug.hitboxes.push({type:'projectile',x:p.x,y:p.y,width:p.width,height:p.height});
   for(const t of w.fighters)if(collision(t,p.x,p.y,p.width,p.height)&&hit(w,p.owner,t,p.move,t.id,p.hits,p.x-Math.sign(p.vx)*30)){p.life=0;break;}
  }
  w.projectiles=w.projectiles.filter(p=>p.life>0&&p.x>-100&&p.x<WIDTH+100);

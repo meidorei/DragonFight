@@ -1,4 +1,4 @@
-import {validateCharacter,safePath} from './schema.js';
+import {validateCharacter,safePath,spriteAnimationEntries} from './schema.js';
 import {skillPlugins} from './plugins/registry.js';
 export const images=new Map();
 export async function loadImage(url){
@@ -22,9 +22,9 @@ export async function loadRoster(){
    if(issues.length){errors.push(...issues);continue;}
    ids.add(c.id);c.base='./characters/'+file.slice(0,file.lastIndexOf('/')+1);
    await loadImage(c.base+c.portrait);
-   for(const [name,a] of Object.entries(c.animations)){
+   for(const [field,a] of spriteAnimationEntries(c)){
     const files=a.files||[a.src];
-    for(const src of files){const im=await loadImage(c.base+src);if(im.width!==a.frameWidth*(a.files?1:a.frames)||im.height!==a.frameHeight)throw new Error(`${file}: animations.${name} ${src} 尺寸错误（${im.width}×${im.height}）`);}
+    for(const src of files){const im=await loadImage(c.base+src);if(im.width!==a.frameWidth*(a.files?1:a.frames)||im.height!==a.frameHeight)throw new Error(`${file}: ${field} ${src} 尺寸错误（${im.width}×${im.height}）`);}
    }
    characters.push(c);
   }catch(e){errors.push(e.message);}

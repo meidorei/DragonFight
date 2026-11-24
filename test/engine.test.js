@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFile,mkdtemp,cp,writeFile,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
-import {createRound,step,startAttack,attackStage,attackFrame,hit,adjudicate,challengeModifiers,Clock,UPGRADES} from '../src/engine.js';
+import {createRound,step,startAttack,attackStage,attackFrame,hit,adjudicate,challengeModifiers,setDebugHitboxes,Clock,STEP,UPGRADES} from '../src/engine.js';
 import {validateCharacter} from '../src/schema.js';
 import {checkCharacter} from '../tools/check.mjs';
 import {keyConflicts,DEFAULT_KEYS} from '../src/input.js';
@@ -23,6 +23,83 @@ test('challenge scaling and upgrade stacking',()=>{const m=challengeModifiers('o
 test('training respawns defeated dummy and fills energy',()=>{const w=world('training');w.fighters[1].hp=0;w.fighters[1].state='ko';ticks(w,1);assert.equal(w.status,'playing');assert.equal(w.fighters[1].hp,w.fighters[1].maxHp);assert.equal(w.fighters[0].energy,100);assert.equal(w.remaining,3600);});
 test('shield absorbs damage and buff expires',()=>{const w=world();near(w);const [a,b]=w.fighters;b.shield=100;b.shieldTime=300;startAttack(w,a,'light');ticks(w,12);assert.equal(b.hp,b.maxHp);assert.equal(b.shield,55);a.buff=1.4;a.buffTime=2;ticks(w,10);assert.equal(a.buff,1);});
 test('projectile hits enemy once, expires and never hits its owner',()=>{const w=world();const [a,b]=w.fighters;a.def=nova;a.x=400;b.x=650;a.energy=100;startAttack(w,a,'skill1');ticks(w,80);assert.equal(b.hp,b.maxHp-80);assert.equal(a.hp,a.maxHp);assert.equal(w.projectiles.length,0);});
+test('debug records delayed attacks in their locked direction through hitstop',()=>{
+  const w=world();
+  near(w);
+  const [a,b]=w.fighters;
+  const move={...ember.moves.light,startup:1,active:2,recovery:0,effects:[{type:'melee',at:1,range:70,height:80}]};
+  a.def={...ember,moves:{...ember.moves,light:move}};
+
+  assert.equal(w.debug,null);
+  setDebugHitboxes(w,true);
+  assert(startAttack(w,a,'light'));
+  a.facing=-1;
+  a.y=20;
+  a.vx=60;
+
+  ticks(w,2);
+  assert.deepEqual(w.debug.hitboxes,[]);
+  assert.equal(b.hp,b.maxHp);
+
+  const hitbox={type:'melee',x:a.x+35,y:a.y+65,width:70,height:80};
+  step(w);
+  assert.equal(a.attack,null);
+  assert.equal(b.hp,b.maxHp-move.damage);
+  assert.deepEqual(w.debug.hitboxes,[hitbox]);
+  assert(w.hitstop>0);
+
+  ticks(w,w.hitstop);
+  assert.deepEqual(w.debug.hitboxes,[hitbox]);
+  step(w);
+  assert.deepEqual(w.debug.hitboxes,[]);
+  setDebugHitboxes(w,false);
+  assert.equal(w.debug,null);
+});
+test('debug records the projectile collision box on the frame it disappears',()=>{
+  const w=world();
+  near(w);
+  const [a,b]=w.fighters;
+  a.def=nova;
+  a.energy=100;
+  const move=a.def.moves.skill1;
+  const effect=move.effects[0];
+  setDebugHitboxes(w,true);
+  assert(startAttack(w,a,'skill1'));
+
+  ticks(w,move.startup+effect.at);
+  assert.deepEqual(w.debug.hitboxes,[]);
+  step(w);
+  assert.equal(b.hp,b.maxHp-move.damage);
+  assert.equal(w.projectiles.length,0);
+  assert.deepEqual(w.debug.hitboxes,[{
+    type:'projectile',x:a.x+45+effect.speed*STEP,y:70,width:effect.range,height:effect.height
+  }]);
+});
+test('ground impact plays once when the delayed area effect activates even on a miss',()=>{
+  const w=world();
+  const [attacker,target]=w.fighters;
+  const baseMove=ember.moves.ultimate;
+  const area={...baseMove.effects[0],at:3,visual:'ground-impact'};
+  const move={...baseMove,effects:[area],vfx:[]};
+  attacker.def={...ember,moves:{...ember.moves,ultimate:move}};
+  attacker.energy=100;
+  assert.deepEqual(validateCharacter(attacker.def),[]);
+  assert(startAttack(w,attacker,'ultimate'));
+
+  ticks(w,move.startup+area.at);
+  assert.deepEqual(w.visuals,[]);
+  step(w);
+  assert.equal(w.visuals.length,1);
+  const impact=w.visuals[0];
+  assert.equal(impact.kind,'ground-impact');
+  assert.equal(impact.x,attacker.x);
+  assert.equal(impact.y,0);
+  assert.equal(impact.range,area.range);
+  assert.equal(target.hp,target.maxHp);
+
+  ticks(w,move.active-area.at-1);
+  assert.deepEqual(w.visuals,[impact]);
+});
 test('dodge invulnerability prevents an active hit',()=>{const w=world();near(w);step(w,{p2:{dodge:true}});startAttack(w,w.fighters[0],'light');ticks(w,8);assert.equal(w.fighters[1].hp,w.fighters[1].maxHp);});
 test('animation phases align active sprite frames and reject bad indices',()=>{const m=ember.moves.light;assert.equal(attackFrame({move:m,t:0},4),0);assert.equal(attackFrame({move:m,t:m.startup},4),1);assert.equal(attackFrame({move:m,t:m.startup+m.active},4),3);const c=structuredClone(ember);c.moves.light.phases.active=[99];assert(validateCharacter(c).some(s=>s.includes('phases.active[0]')));});
 test('fixed clock produces equal simulation at 30, 60 and 144 Hz',()=>{const totals=[30,60,144].map(hz=>{const c=new Clock();let count=0;for(let i=0;i<hz*5;i++)c.advance(1/hz,()=>count++);return count;});assert.deepEqual(totals,[300,300,300]);});

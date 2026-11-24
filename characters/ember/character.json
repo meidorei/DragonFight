@@ -3,10 +3,9 @@
   "id": "ember",
   "name": "赤练",
   "role": "近战",
-  "description": "近身压制，快速突进。",
-  "color": "#f36c66",
+  "description": "炉坊里长大的直性子拳手。用踏炭冲拳贴身，架起护势后开炉蓄劲。",
+  "color": "#f36b60",
   "portrait": "portrait.png",
-  "placeholder": true,
   "stats": {
     "health": 1000,
     "speed": 280,
@@ -224,7 +223,7 @@
   },
   "moves": {
     "light": {
-      "name": "探锋",
+      "name": "火花拳",
       "animation": "light",
       "startup": 6,
       "active": 4,
@@ -256,7 +255,7 @@
       }
     },
     "heavy": {
-      "name": "破阵",
+      "name": "锻火重拳",
       "animation": "heavy",
       "startup": 15,
       "active": 6,
@@ -290,7 +289,7 @@
       "knockdown": true
     },
     "air": {
-      "name": "掠空",
+      "name": "飞烬踢",
       "animation": "air",
       "startup": 7,
       "active": 7,
@@ -322,7 +321,7 @@
       }
     },
     "skill1": {
-      "name": "踏风击",
+      "name": "踏炭冲拳",
       "animation": "skill1",
       "startup": 12,
       "active": 7,
@@ -358,10 +357,29 @@
           4,
           5
         ]
-      }
+      },
+      "vfx": [
+        {
+          "at": 0,
+          "src": "vfx/cinder-rush.png",
+          "frameWidth": 128,
+          "frameHeight": 128,
+          "frames": 5,
+          "fps": 24,
+          "anchor": [
+            21,
+            65
+          ],
+          "offset": [
+            60,
+            75
+          ],
+          "size": 88
+        }
+      ]
     },
     "skill2": {
-      "name": "守心",
+      "name": "炉心护势",
       "animation": "skill2",
       "startup": 8,
       "active": 4,
@@ -392,10 +410,29 @@
           4,
           5
         ]
-      }
+      },
+      "vfx": [
+        {
+          "at": 0,
+          "src": "vfx/hearth-guard.png",
+          "frameWidth": 160,
+          "frameHeight": 160,
+          "frames": 5,
+          "fps": 20,
+          "anchor": [
+            80,
+            80
+          ],
+          "offset": [
+            4,
+            68
+          ],
+          "size": 143
+        }
+      ]
     },
     "skill3": {
-      "name": "燃志",
+      "name": "开炉",
       "animation": "skill3",
       "startup": 12,
       "active": 4,
@@ -426,7 +463,26 @@
           4,
           5
         ]
-      }
+      },
+      "vfx": [
+        {
+          "at": 0,
+          "src": "vfx/forge-sparks.png",
+          "frameWidth": 160,
+          "frameHeight": 160,
+          "frames": 5,
+          "fps": 20,
+          "anchor": [
+            80,
+            135
+          ],
+          "offset": [
+            0,
+            0
+          ],
+          "size": 155
+        }
+      ]
     },
     "ultimate": {
       "name": "龙焰破",
@@ -463,7 +519,26 @@
           7
         ]
       },
-      "knockdown": true
+      "knockdown": true,
+      "vfx": [
+        {
+          "at": 0,
+          "src": "vfx/dragon-flare.png",
+          "frameWidth": 512,
+          "frameHeight": 192,
+          "frames": 7,
+          "fps": 20,
+          "anchor": [
+            256,
+            180
+          ],
+          "offset": [
+            0,
+            0
+          ],
+          "size": 192
+        }
+      ]
     }
   }
 }

@@ -27,6 +27,12 @@ Use ES modules, explicit `.js` extensions, semicolons, and JSDoc contracts. Use 
 
 Use camelCase for functions/variables, PascalCase for classes, and lowercase kebab-case character/plugin IDs such as `moon-knight`. Keep player-facing text Chinese. Add characters through configuration and registered plugins rather than character-specific engine branches. Read `docs/角色制作规范.md` and `docs/技能扩展.md` first.
 
+## 规格驱动开发（SDD）
+
+- 新增玩法、角色或技能，或者调整战斗规则、输入、存档等玩家可感知的行为时，先复制[规格模板](docs/specs/_template.md)到 `docs/specs/<feature>.md`，再开始实现。错别字和纯样式调整沿用现有流程。
+- 写清目标、预期行为与边界、可验证的验收条件和实现范围。新增角色可引用[角色制作规范](docs/角色制作规范.md)和[技能扩展](docs/技能扩展.md)，在规格中写明该角色独有的行为。
+- 需求变化时，先更新规格，再调整实现。交付前将每条验收条件对应到自动测试或游戏内操作，并在规格中记录实际结果。代码或素材变更按下文的测试约定执行，受影响的界面按[手动验收路径](docs/开发与验证.md#手动验收路径)验证。
+
 ## Testing Guidelines
 
 Write `test/*.test.js` using `node:test` and `node:assert/strict`, with behavior-based test names. Cover changed mechanics and regressions; use seeded simulations. No coverage threshold is configured.
